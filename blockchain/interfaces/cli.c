@@ -21,6 +21,9 @@
 #include "cli/server.h"
 #include "cli/share.h"
 
+typedef int (*cli_cb)(int argc, const char **argv);
+
+
 int BLOCKCHAIN_cli(int argc, const char **argv)
 {
     switch (argc) {
@@ -38,6 +41,33 @@ int BLOCKCHAIN_cli(int argc, const char **argv)
         }
         default:
         {
+
+            const cli_cb callbacks[6] =  {   BLOCKCHAIN_CLI_account,
+                                            BLOCKCHAIN_CLI_create,
+                                            BLOCKCHAIN_CLI_query,
+                                            BLOCKCHAIN_CLI_read,
+                                            BLOCKCHAIN_CLI_server,
+                                            BLOCKCHAIN_CLI_share,
+                                        };
+            const char*  cmds_map[6] =   {   "account",
+                                "create",
+                                "query",
+                                "read",
+                                "server",
+                                "share",
+                            };
+            
+            
+            for(int i=0; i<6; i++){
+                if (strcmp(argv[1], cmds_map[i])){
+                    return callbacks[i](argc, argv);
+                }
+            }
+            
+            fprintf(stderr, "%s", HELP);
+            return EXIT_FAILURE;
+
+            /*
             if (strcmp(argv[1], "account") == 0)
             {
                 return BLOCKCHAIN_CLI_account(argc, argv);
@@ -68,6 +98,7 @@ int BLOCKCHAIN_cli(int argc, const char **argv)
                 return EXIT_FAILURE;
             }
             break;
+            */
         }
     }
 }
